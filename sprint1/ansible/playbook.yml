@@ -1,0 +1,10 @@
+---
+- hosts: srv
+  become: true
+  roles:
+   - all
+- hosts: k8s
+  become: true
+  roles:
+   - all
+   - k8s-app
