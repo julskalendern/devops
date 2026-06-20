@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app
+spec:
+  replicas: {{ .Values.app.replicaCount }}
+  selector:
+    matchLabels:
+      app: app
+  template:
+    metadata:
+      labels:
+        app: app
+    spec:
+
+      hostNetwork: true
+
+      initContainers:
+        - name: run-migrations
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["python", "manage.py", "migrate"]
+          env:
+            - name: DB_HOST
+              value: "10.0.0.11"
+            - name: DB_NAME
+              value: {{ .Values.postgres.dbName | quote }}
+            - name: DB_USER
+              value: {{ .Values.postgres.user | quote }}
+            - name: DB_PASS
+              value: {{ .Values.postgres.password | quote }}
+
+      containers:
+        - name: django-app
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["python", "manage.py", "runserver", "0.0.0.0:3003"]
+          ports:
+            - containerPort: {{ .Values.app.containerPort }}
+          env:
+            - name: DB_HOST
+              value: "10.0.0.11"
+            - name: DB_NAME
+              value: {{ .Values.postgres.dbName | quote }}
+            - name: DB_USER
+              value: {{ .Values.postgres.user | quote }}
+            - name: DB_PASS
+              value: {{ .Values.postgres.password | quote }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: app-service
+spec:
+  type: NodePort
+  ports:
+    - port: {{ .Values.app.containerPort }}
+      targetPort: {{ .Values.app.containerPort }}
+      nodePort: {{ .Values.app.nodePort }}
+  selector:
+    app: app

@@ -1,0 +1,16 @@
+image:
+  repository: ghcr.io/julskalendern/diplom
+  tag: "1.2.3"
+  pullPolicy: IfNotPresent
+
+postgres:
+  image: postgres:13-alpine
+  dbName: "tutorial-dev"
+  user: "vinhle"
+  password: "password"
+  storageSize: "2Gi"
+
+app:
+  replicaCount: 1
+  containerPort: 3003
+  nodePort: 30003
