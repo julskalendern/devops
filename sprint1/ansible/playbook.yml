@@ -3,8 +3,11 @@
   become: true
   roles:
    - all
+   - srv
 - hosts: k8s
   become: true
   roles:
    - all
    - k8s-app
+
+

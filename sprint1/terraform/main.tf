@@ -58,6 +58,7 @@ resource "yandex_compute_instance" "srv" {
 resource "yandex_compute_instance" "k8s-master" {
   name = "master"
   zone = var.zone
+  service_account_id = var.service
   resources {
     cores  = 4
     memory = 8
@@ -83,6 +84,7 @@ resource "yandex_compute_instance" "k8s-master" {
 resource "yandex_compute_instance" "k8s-app" {
   name = "app"
   zone = var.zone
+  service_account_id = var.service
   resources {
     cores  = 4
     memory = 8
